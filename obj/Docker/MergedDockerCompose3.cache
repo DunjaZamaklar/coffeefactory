@@ -1,0 +1,70 @@
+name: dockercompose1231400253006867312
+services:
+  app:
+    build:
+      context: C:\Users\DunjaZamaklar\Downloads\App\App
+      dockerfile: App/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: "5000"
+      ASPNETCORE_HTTPS_PORTS: "5001"
+    image: app
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        target: 5000
+        published: "5000"
+        protocol: tcp
+      - mode: ingress
+        target: 5001
+        published: "5001"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: C:\Users\DunjaZamaklar\AppData\Roaming/Microsoft/UserSecrets
+        target: /home/app/.microsoft/usersecrets
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\DunjaZamaklar\AppData\Roaming/ASP.NET/Https
+        target: /home/app/.aspnet/https
+        read_only: true
+        bind:
+          create_host_path: true
+  app.database:
+    container_name: app.database
+    environment:
+      POSTGRES_DB: appDb
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+    image: postgres:15
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        target: 5432
+        published: "5432"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: C:\Users\DunjaZamaklar\Downloads\App\App\.containers\app-db
+        target: /var/lib/postgresql/data
+        bind:
+          create_host_path: true
+  pgadmin:
+    environment:
+      PGADMIN_DEFAULT_EMAIL: test@test.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    image: dpage/pgadmin4
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        target: 80
+        published: "5050"
+        protocol: tcp
+networks:
+  default:
+    name: dockercompose1231400253006867312_default
